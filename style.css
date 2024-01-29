@@ -6,12 +6,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100%;
+    width: 100%;
     -ms-overflow-style: none;
     scrollbar-width: none;
     scrollbar-color: transparent transparent;
     overflow-y: scroll; 
 }
+
 
 h1 {
     font-size: 20px;
@@ -110,6 +111,9 @@ body::-webkit-scrollbar {
 .textareaInput {
     font-family: 'Roboto', Arial, sans-serif;
     width: 100%;
+    border: none;
+    resize: none; 
+    outline: none; 
     padding: 15px;
     background-color: #f5f6f7;
     margin-bottom: 10px;
@@ -134,9 +138,6 @@ body::-webkit-scrollbar {
 .textareaInput textarea {
     width: 100%;
     height: 100%; 
-    border: none;
-    resize: none; 
-    outline: none;
     font-size: 15px;
     border-radius: 10px;
     padding: 0;
@@ -148,66 +149,77 @@ body::-webkit-scrollbar {
     border-color: transparent;
 }
 
-/* */
+
 
 .input-file-row {
-	display: inline-block;
+    display: flex;
+    width: 100%; /* Добавьте эту строку, чтобы растянуть input-file-row на 100% ширины */
 }
+
 .input-file {
-	display: inline-block;
+    display: flex;
+    width: 100%; /* Добавьте эту строку, чтобы растянуть input-file на 100% ширины */
 }
+
 .input-file span {
-	display: inline-block;
-	cursor: pointer;
-	outline: none;
-	text-decoration: none;
-	font-size: 15px;
-	vertical-align: middle;
-	color: #1ab248;
-	text-align: center;
-	border-radius: 4px;
-	background-color: white;
+    display: flex;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    font-size: 15px;
+    vertical-align: middle;
+    color: #1ab248;
+    text-align: center;
+    border-radius: 4px;
+    background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-	line-height: 22px;
-	height: 40px;
-    width: 400px;
-	padding: 10px 20px;
-	box-sizing: border-box;
-	border: none;
-	margin: 0;
-	transition: background-color 0.5s;
+    line-height: 22px;
+    height: 40px;
+    width: 100%; /* Замените ширину на 100% */
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border: none;
+    margin: 0;
+    transition: background-color 0.5s;
 }
+
+/* Опционально: Уберите height из .input-file span, чтобы высота подстраивалась автоматически в зависимости от содержимого */
+.input-file span {
+    height: auto;
+}
+
 .input-file input[type=file] {
-	position: absolute;
-	z-index: -1;
-	opacity: 0;
-	display: block;
-	width: 0;
-	height: 0;
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    display: block;
+    width: 0;
+    height: 0;
 }
- 
- 
+
 .input-file:hover span {
-	background-color: #1ab248;
+    background-color: #1ab248;
     color: white;
 }
 
 .input-file input[type=file]:disabled + span {
-	background-color: #eee;
+    background-color: #eee;
 }
- 
+
 .input-file-list {
-	padding: 10px 0;
+    padding: 10px 0;
 }
+
 .input-file-list-item {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
     font-size: 13px;
 }
+
 .input-file-list-remove {
-	color: red;
-	text-decoration: none;
-	display: inline-block;
-	margin-left: 5px;
+    color: red;
+    text-decoration: none;
+    display: flex;
+    margin-left: 5px;
 }
 
 .status {
