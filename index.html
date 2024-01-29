@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация(Ключ + Пароль)</title>
+    <link rel="stylesheet" href="/static/claim/style.css"></head>
+<body> 
+    <div class="main">
+        <h1>Создание претензии</h1>
+        <div class="container">
+            <form method="post" enctype="multipart/form-data">
+                <label for="invoice_number">Номер накладной</label>
+                <input type="text" id="invoice_number" name="invoice_number" class="inputed" readonly>
+
+                <label for="email">Почта</label>
+                <input type="text" id="email" name="email" class="inputed" placeholder="Введите почту">
+
+                <label for="fullname">ФИО контактного лица</label>
+                <input type="text" id="fullname" name="fullname" class="inputed" placeholder="Введите ФИО">
+
+                <label for="amount">Требуемая сумма</label>
+                <input type="text" id="amount" name="amount" class="inputed" placeholder="Введите сумму">
+
+                <label for="desc">Описание ситуации</label>
+                <textarea id="desc" name="desc" rows="7" cols="50" class="textareaInput" placeholder="Введите описание ситуации"></textarea>
+                <div class="input-file-row">
+                    <label class="input-file">
+                           <input type="file" accept="image/*, video/*, application/pdf" name="file[]" multiple>		
+                           <span> + Добавить фото/видео</span>
+                     </label>
+                    <div class="input-file-list"></div>  
+                </div>  
+
+            
+            </form>
+            <p class="status"></p>
+            <input class="general"  id="confirm" type="submit" value="Отправить">
+    </div>
+    </div>
+    
+    <script src="/static/claim/main.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>  
+</body>
+</html>
