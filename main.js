@@ -1,4 +1,5 @@
 var dt = new DataTransfer();
+let statusText = document.querySelector(".status");
 
 (function () {
     function handleFileInputChange(inputFile) {
@@ -52,9 +53,6 @@ var dt = new DataTransfer();
     inputFileElements.forEach(handleFileInputChange);
 })();
 
-document.getElementById("invoice_number").value = "1270701";
-
-let statusText = document.querySelector(".status");
 let confirmButton = document.getElementById("confirm");
 
 confirmButton.addEventListener("click", function (event) {
@@ -64,12 +62,22 @@ confirmButton.addEventListener("click", function (event) {
 });
 
 function validateForm() {
+    var invoice_number = document.getElementById("invoice_number");
     var email = document.getElementById("email");
     var fullname = document.getElementById("fullname");
     var amount = document.getElementById("amount");
     var desc = document.getElementById("desc");
 
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (invoice_number.value.trim() === ""){
+        statusText.innerText = "Пожалуйста, введите номер накладной";
+        invoice_number.classList.add("error");
+        return false;
+    } else {
+        invoice_number.classList.remove("error");
+    }
+
     if (!emailRegex.test(email.value)) {
         statusText.innerText = "Пожалуйста, введите корректный адрес электронной почты";
         email.classList.add("error");

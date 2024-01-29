@@ -45,7 +45,7 @@ body::-webkit-scrollbar {
     border: none;
     cursor: pointer;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 0px;
     border-radius: 10px;
     font-size: 16px;
     text-align: center;
@@ -153,16 +153,24 @@ body::-webkit-scrollbar {
 
 .input-file-row {
     display: flex;
-    width: 100%; /* Добавьте эту строку, чтобы растянуть input-file-row на 100% ширины */
+    flex-direction: column;
+    width: 100%; 
+    
+    
 }
 
 .input-file {
     display: flex;
-    width: 100%; /* Добавьте эту строку, чтобы растянуть input-file на 100% ширины */
+    flex-direction: column;
+    width: 100%;
+    
+    
 }
 
 .input-file span {
+    
     display: flex;
+    justify-content: center;
     cursor: pointer;
     outline: none;
     text-decoration: none;
@@ -175,7 +183,7 @@ body::-webkit-scrollbar {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     line-height: 22px;
     height: 40px;
-    width: 100%; /* Замените ширину на 100% */
+    width: 100%; 
     padding: 10px 20px;
     box-sizing: border-box;
     border: none;
@@ -183,9 +191,11 @@ body::-webkit-scrollbar {
     transition: background-color 0.5s;
 }
 
-/* Опционально: Уберите height из .input-file span, чтобы высота подстраивалась автоматически в зависимости от содержимого */
 .input-file span {
     height: auto;
+    border-radius: 10px;
+
+    
 }
 
 .input-file input[type=file] {
@@ -193,6 +203,7 @@ body::-webkit-scrollbar {
     z-index: -1;
     opacity: 0;
     display: block;
+    
     width: 0;
     height: 0;
 }
@@ -213,6 +224,7 @@ body::-webkit-scrollbar {
 .input-file-list-item {
     margin-bottom: 10px;
     font-size: 13px;
+    display: flex;
 }
 
 .input-file-list-remove {
