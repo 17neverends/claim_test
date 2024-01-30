@@ -28,53 +28,40 @@ let statusText = document.querySelector(".status");
         });
     }
 
-    function validateFile(file, filesList) {
-        return new Promise(function (resolve, reject) {
+    async function validateFile(file, filesList) {
+        try {
+            await checkFileSize(file);
+            if (!isFileAlreadyAdded(file, dt)) {
+                addFileToList(file, filesList);
+            } else {
+                throw new Error('Файл уже добавлен.');
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+
+    function checkFileSize(file) {
+        return new Promise((resolve, reject) => {
             if (file.type.includes('video')) {
-                var videoBlob = new Blob([file], { type: file.type });
-    
-                var video = document.createElement('video');
-                video.src = URL.createObjectURL(videoBlob);
-    
-                video.addEventListener('loadedmetadata', function () {
-                    if (video.duration <= 120 && file.size <= maxVideoSize) {
-                        if (!isFileAlreadyAdded(file, dt)) {
-                            addFileToList(file, filesList);
-                            resolve();
-                        } else {
-                            reject('Файл уже добавлен.');
-                        }
-                    } else {
-                        reject('Файл не прошел проверку. Длительность видео не более 2 минут и размер файла не более 200 МБ.');
-                    }
-    
-                    URL.revokeObjectURL(video.src);
-                });
+                if (file.size <= maxVideoSize) {
+                    resolve();
+                } else {
+                    reject('Размер файла видео превышает максимально допустимый размер.');
+                }
             } else if (file.type.includes('image')) {
                 if (file.size <= maxImageSize) {
-                    if (!isFileAlreadyAdded(file, dt)) {
-                        addFileToList(file, filesList);
-                        resolve();
-                    } else {
-                        reject('Файл уже добавлен.');
-                    }
+                    resolve();
                 } else {
-                    reject('Размер превышает допустимый объем для изображения.');
+                    reject('Размер файла изображения превышает максимально допустимый размер.');
                 }
             } else if (getFileExtension(file.name).toLowerCase() === 'pdf') {
                 if (file.size <= maxPdfSize) {
-                    if (!isFileAlreadyAdded(file, dt)) {
-                        addFileToList(file, filesList);
-                        resolve();
-                    } else {
-                        reject('Файл уже добавлен.');
-                    }
+                    resolve();
                 } else {
-                    reject('Размер превышает допустимый объем для PDF.');
+                    reject('Размер файла PDF превышает максимально допустимый размер.');
                 }
-            } else {
-                reject('Тип файла не поддерживается.');
-            }
+            } 
         });
     }
     
