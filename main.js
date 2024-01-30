@@ -9,7 +9,7 @@ let statusText = document.querySelector(".status");
     function handleFileInputChange(inputFile) {
         inputFile.addEventListener('change', function () {
             var filesList = this.closest('.input-file').nextElementSibling;
-            var maxDuration;
+            var maxDuration = 120;
 
 
             for (var i = 0; i < this.files.length; i++) {
