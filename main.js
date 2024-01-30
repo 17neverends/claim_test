@@ -31,10 +31,11 @@ let statusText = document.querySelector(".status");
     function validateFile(file, filesList) {
         return new Promise(function (resolve, reject) {
             if (file.type.includes('video')) {
-                const video = document.createElement('video');
-
-                video.src = URL.createObjectURL(file);
-
+                var videoBlob = new Blob([file], { type: file.type });
+    
+                var video = document.createElement('video');
+                video.src = URL.createObjectURL(videoBlob);
+    
                 video.addEventListener('loadedmetadata', function () {
                     if (video.duration <= 120 && file.size <= maxVideoSize) {
                         if (!isFileAlreadyAdded(file, dt)) {
@@ -46,7 +47,7 @@ let statusText = document.querySelector(".status");
                     } else {
                         reject('Файл не прошел проверку. Длительность видео не более 2 минут и размер файла не более 200 МБ.');
                     }
-
+    
                     URL.revokeObjectURL(video.src);
                 });
             } else if (file.type.includes('image')) {
@@ -76,6 +77,7 @@ let statusText = document.querySelector(".status");
             }
         });
     }
+    
 
     function getFileExtension(filename) {
         return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
