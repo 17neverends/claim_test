@@ -11,15 +11,12 @@
             inputFile.addEventListener('change', function () {
                 var filesList = this.closest('.input-file').nextElementSibling;
                 var filePromises = [];
-        
+
                 for (var i = 0; i < this.files.length; i++) {
                     var file = this.files[i];
                     filePromises.push(validateFile(file, filesList));
                 }
-        
-                // Скрыть галерею устройства
-                this.style.display = 'none';
-        
+
                 Promise.all(filePromises)
                     .then(function () {
                         statusText.innerText = '';
@@ -27,9 +24,6 @@
                     })
                     .catch(function (error) {
                         statusText.innerText = error;
-        
-                        // Показать галерею устройства в случае ошибки
-                        inputFile.style.display = 'block';
                     });
             });
         }
