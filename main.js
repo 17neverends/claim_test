@@ -1,115 +1,134 @@
-var dt = new DataTransfer();
-let statusText = document.querySelector(".status");
+    var dt = new DataTransfer();
+    let statusText = document.querySelector(".status");
 
-(function () {
-    var statusText = document.querySelector(".status");
-    var maxVideoSize = 200 * 1024 * 1024;
-    var maxImageSize = 10 * 1024 * 1024;
-    var maxPdfSize = 4 * 1024 * 1024;
+    (function () {
+        var statusText = document.querySelector(".status");
+        var maxVideoSize = 200 * 1024 * 1024;
+        var maxImageSize = 10 * 1024 * 1024;
+        var maxPdfSize = 4 * 1024 * 1024;
 
-    function handleFileInputChange(inputFile) {
-        inputFile.addEventListener('change', function () {
-            var filesList = this.closest('.input-file').nextElementSibling;
-            var filePromises = [];
-
-            for (var i = 0; i < this.files.length; i++) {
-                var file = this.files[i];
-                filePromises.push(validateFile(file, filesList));
-            }
-
-            Promise.all(filePromises)
-                .then(function () {
-                    statusText.innerText = '';
-                    inputFile.value = '';
-                })
-                .catch(function (error) {
-                    statusText.innerText = error;
-                });
-        });
-    }
-
-    async function validateFile(file, filesList) {
-        try {
-            await checkFileSize(file);
-            if (!isFileAlreadyAdded(file, dt)) {
-                addFileToList(file, filesList);
-            } else {
-                throw new Error('Файл уже добавлен.');
-            }
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    }
-
-    function checkFileSize(file) {
-        return new Promise((resolve, reject) => {
-            if (file.type.includes('video')) {
-                if (file.size <= maxVideoSize) {
-                    resolve();
-                } else {
-                    reject('Размер файла видео превышает максимально допустимый размер.');
+        function handleFileInputChange(inputFile) {
+            inputFile.addEventListener('change', function () {
+                var filesList = this.closest('.input-file').nextElementSibling;
+                var filePromises = [];
+        
+                for (var i = 0; i < this.files.length; i++) {
+                    var file = this.files[i];
+                    filePromises.push(validateFile(file, filesList));
                 }
-            } else if (file.type.includes('image')) {
-                if (file.size <= maxImageSize) {
-                    resolve();
-                } else {
-                    reject('Размер файла изображения превышает максимально допустимый размер.');
-                }
-            } else if (getFileExtension(file.name).toLowerCase() === 'pdf') {
-                if (file.size <= maxPdfSize) {
-                    resolve();
-                } else {
-                    reject('Размер файла PDF превышает максимально допустимый размер.');
-                }
-            } 
-        });
-    }
-    
-
-    function getFileExtension(filename) {
-        return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
-    }
-
-    function addFileToList(file, filesList) {
-        var newFileInput = document.createElement('div');
-        newFileInput.className = 'input-file-list-item';
-        newFileInput.innerHTML = '<span class="input-file-list-name">' + file.name + '</span>' +
-            '<a href="#" class="input-file-list-remove">x</a>';
-        newFileInput.querySelector('.input-file-list-remove').addEventListener('click', function (event) {
-            event.preventDefault();
-            removeFilesItem(this);
-        });
-        filesList.appendChild(newFileInput);
-        dt.items.add(file);
-    }
-
-    function removeFilesItem(target) {
-        var name = target.previousElementSibling.textContent;
-        var inputFile = target.closest('.input-file-row').querySelector('input[type=file]');
-
-        target.closest('.input-file-list-item').remove();
-
-        for (var i = 0; i < dt.items.length; i++) {
-            if (name === dt.items[i].getAsFile().name) {
-                dt.items.remove(i);
-            }
+        
+                // Скрыть галерею устройства
+                this.style.display = 'none';
+        
+                Promise.all(filePromises)
+                    .then(function () {
+                        statusText.innerText = '';
+                        inputFile.value = '';
+                    })
+                    .catch(function (error) {
+                        statusText.innerText = error;
+        
+                        // Показать галерею устройства в случае ошибки
+                        inputFile.style.display = 'block';
+                    });
+            });
         }
 
-        inputFile.files = dt.files;
-    }
-
-    function isFileAlreadyAdded(file, dataTransfer) {
-        for (var i = 0; i < dataTransfer.items.length; i++) {
-            if (file.name === dataTransfer.items[i].getAsFile().name) {
-                return true;
-            }
+        function validateFile(file, filesList) {
+            return new Promise(function (resolve, reject) {
+                if (file.type.includes('video')) {
+                    var videoBlob = new Blob([file], { type: file.type });
+        
+                    var video = document.createElement('video');
+                    video.src = URL.createObjectURL(videoBlob);
+        
+                    video.addEventListener('loadedmetadata', function () {
+                        if (video.duration <= 120 && file.size <= maxVideoSize) {
+                            if (!isFileAlreadyAdded(file, dt)) {
+                                addFileToList(file, filesList);
+                                resolve();
+                            } else {
+                                reject('Файл уже добавлен.');
+                            }
+                        } else {
+                            reject('Файл не прошел проверку. Длительность видео не более 2 минут и размер файла не более 200 МБ.');
+                        }
+        
+                        URL.revokeObjectURL(video.src);
+                    });
+                } else if (file.type.includes('image')) {
+                    if (file.size <= maxImageSize) {
+                        if (!isFileAlreadyAdded(file, dt)) {
+                            addFileToList(file, filesList);
+                            resolve();
+                        } else {
+                            reject('Файл уже добавлен.');
+                        }
+                    } else {
+                        reject('Размер превышает допустимый объем для изображения.');
+                    }
+                } else if (getFileExtension(file.name).toLowerCase() === 'pdf') {
+                    if (file.size <= maxPdfSize) {
+                        if (!isFileAlreadyAdded(file, dt)) {
+                            addFileToList(file, filesList);
+                            resolve();
+                        } else {
+                            reject('Файл уже добавлен.');
+                        }
+                    } else {
+                        reject('Размер превышает допустимый объем для PDF.');
+                    }
+                } else {
+                    reject('Тип файла не поддерживается.');
+                }
+            });
         }
-        return false;
-    }
+        
 
-    var inputFileElements = document.querySelectorAll('.input-file input[type=file]');
-    inputFileElements.forEach(handleFileInputChange);
-})();
+        function getFileExtension(filename) {
+            return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+        }
+
+        function addFileToList(file, filesList) {
+            var newFileInput = document.createElement('div');
+            newFileInput.className = 'input-file-list-item';
+            newFileInput.innerHTML = '<span class="input-file-list-name">' + file.name + '</span>' +
+                '<a href="#" class="input-file-list-remove">x</a>';
+            newFileInput.querySelector('.input-file-list-remove').addEventListener('click', function (event) {
+                event.preventDefault();
+                removeFilesItem(this);
+            });
+            filesList.appendChild(newFileInput);
+            dt.items.add(file);
+        }
+
+        function removeFilesItem(target) {
+            var name = target.previousElementSibling.textContent;
+            var inputFile = target.closest('.input-file-row').querySelector('input[type=file]');
+
+            target.closest('.input-file-list-item').remove();
+
+            for (var i = 0; i < dt.items.length; i++) {
+                if (name === dt.items[i].getAsFile().name) {
+                    dt.items.remove(i);
+                }
+            }
+
+            inputFile.files = dt.files;
+        }
+
+        function isFileAlreadyAdded(file, dataTransfer) {
+            for (var i = 0; i < dataTransfer.items.length; i++) {
+                if (file.name === dataTransfer.items[i].getAsFile().name) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        var inputFileElements = document.querySelectorAll('.input-file input[type=file]');
+        inputFileElements.forEach(handleFileInputChange);
+    })();
 let confirmButton = document.getElementById("confirm");
 
 confirmButton.addEventListener("click", function (event) {
