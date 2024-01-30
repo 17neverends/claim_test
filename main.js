@@ -2,27 +2,85 @@ var dt = new DataTransfer();
 let statusText = document.querySelector(".status");
 
 (function () {
+    var statusText = document.querySelector(".status");
+    var maxVideoSize = 20 * 1024 * 1024; 
+    var maxImageSize = 3 * 1024 * 1024;  
+    var maxPdfSize = 2 * 1024 * 1024;   
     function handleFileInputChange(inputFile) {
         inputFile.addEventListener('change', function () {
             var filesList = this.closest('.input-file').nextElementSibling;
+            var maxDuration;
+
 
             for (var i = 0; i < this.files.length; i++) {
-                if (!isFileAlreadyAdded(this.files[i], dt)) {
-                    var newFileInput = document.createElement('div');
-                    newFileInput.className = 'input-file-list-item';
-                    newFileInput.innerHTML = '<span class="input-file-list-name">' + this.files[i].name + '</span>' +
-                        '<a href="#" class="input-file-list-remove">x</a>';
-                    newFileInput.querySelector('.input-file-list-remove').addEventListener('click', function (event) {
-                        event.preventDefault();
-                        removeFilesItem(this);
-                    });
-                    filesList.appendChild(newFileInput);
-                    dt.items.add(this.files[i]);
-                }
+                var file = this.files[i];
+
+            
+                    if (this.accept.includes('video') && file.type.includes('video')) {
+                        if (file.size <= maxVideoSize) {
+                            var video = document.createElement('video');
+                            video.src = URL.createObjectURL(file);
+    
+                            video.addEventListener('loadedmetadata', function () {
+                                if (this.duration <= maxDuration) {
+                                    if (!isFileAlreadyAdded(file, dt)) {
+                                        addFileToList(file, filesList);
+                                    } else {
+                                        statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
+                                    }
+                                } else {
+                                    statusText.innerText = 'Длительность видео ' + file.name + ' превышает допустимый объем.';
+                                }
+                            });
+                        } else {
+                            statusText.innerText = 'Файл с именем ' + file.name + ' превышает допустимый лимит.';
+
+                        }
+
+                    } else if (this.accept.includes('image') && file.type.includes('image')) {
+                        if (file.size <= maxImageSize) {
+                            if (!isFileAlreadyAdded(file, dt)) {
+                                addFileToList(file, filesList);
+                            } else {
+                                statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
+                            }} else {
+                                statusText.innerText = 'Размер ' + file.name + ' превышает допустимый объем.';
+
+                            }
+
+                        
+                    } else if (this.accept.includes('pdf') && getFileExtension(file.name).toLowerCase() === 'pdf') {
+                        if (file.size <= maxPdfSize) {
+                            if (!isFileAlreadyAdded(file, dt)) {
+                                addFileToList(file, filesList);
+                            } else {
+                                statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
+                            }} else {
+                                statusText.innerText = 'Размер ' + file.name + ' превышает допустимый объем.';
+
+                            }}
+                
             }
 
             this.value = '';
         });
+    }
+
+    function getFileExtension(filename) {
+        return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+    }
+
+    function addFileToList(file, filesList) {
+        var newFileInput = document.createElement('div');
+        newFileInput.className = 'input-file-list-item';
+        newFileInput.innerHTML = '<span class="input-file-list-name">' + file.name + '</span>' +
+            '<a href="#" class="input-file-list-remove">x</a>';
+        newFileInput.querySelector('.input-file-list-remove').addEventListener('click', function (event) {
+            event.preventDefault();
+            removeFilesItem(this);
+        });
+        filesList.appendChild(newFileInput);
+        dt.items.add(file);
     }
 
     function removeFilesItem(target) {
