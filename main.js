@@ -3,66 +3,77 @@ let statusText = document.querySelector(".status");
 
 (function () {
     var statusText = document.querySelector(".status");
-    var maxVideoSize = 500 * 1024 * 1024; 
-    var maxImageSize = 30 * 1024 * 1024;  
-    var maxPdfSize = 20 * 1024 * 1024;   
+    var maxVideoSize = 200 * 1024 * 1024;
+    var maxImageSize = 10 * 1024 * 1024;
+    var maxPdfSize = 4 * 1024 * 1024;
+
     function handleFileInputChange(inputFile) {
         inputFile.addEventListener('change', function () {
             var filesList = this.closest('.input-file').nextElementSibling;
-            var maxDuration = 120;
-
+            var filePromises = [];
 
             for (var i = 0; i < this.files.length; i++) {
                 var file = this.files[i];
-
-            
-                    if (this.accept.includes('video') && file.type.includes('video')) {
-                        if (file.size <= maxVideoSize) {
-                            var video = document.createElement('video');
-                            video.src = URL.createObjectURL(file);
-    
-                            video.addEventListener('loadedmetadata', function () {
-                                if (this.duration <= maxDuration) {
-                                    if (!isFileAlreadyAdded(file, dt)) {
-                                        addFileToList(file, filesList);
-                                    } else {
-                                        statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
-                                    }
-                                } else {
-                                    statusText.innerText = 'Длительность видео ' + file.name + ' превышает допустимый объем.';
-                                }
-                            });
-                        } else {
-                            statusText.innerText = 'Файл с именем ' + file.name + ' превышает допустимый лимит.';
-
-                        }
-
-                    } else if (this.accept.includes('image') && file.type.includes('image')) {
-                        if (file.size <= maxImageSize) {
-                            if (!isFileAlreadyAdded(file, dt)) {
-                                addFileToList(file, filesList);
-                            } else {
-                                statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
-                            }} else {
-                                statusText.innerText = 'Размер ' + file.name + ' превышает допустимый объем.';
-
-                            }
-
-                        
-                    } else if (this.accept.includes('pdf') && getFileExtension(file.name).toLowerCase() === 'pdf') {
-                        if (file.size <= maxPdfSize) {
-                            if (!isFileAlreadyAdded(file, dt)) {
-                                addFileToList(file, filesList);
-                            } else {
-                                statusText.innerText = 'Файл с именем ' + file.name + ' уже добавлен.';
-                            }} else {
-                                statusText.innerText = 'Размер ' + file.name + ' превышает допустимый объем.';
-
-                            }}
-                
+                filePromises.push(validateFile(file, filesList));
             }
 
-            this.value = '';
+            Promise.all(filePromises)
+                .then(function () {
+                    statusText.innerText = '';
+                    inputFile.value = '';
+                })
+                .catch(function (error) {
+                    statusText.innerText = error;
+                });
+        });
+    }
+
+    function validateFile(file, filesList) {
+        return new Promise(function (resolve, reject) {
+            if (file.type.includes('video')) {
+                const video = document.createElement('video');
+
+                video.src = URL.createObjectURL(file);
+
+                video.addEventListener('loadedmetadata', function () {
+                    if (video.duration <= 120 && file.size <= maxVideoSize) {
+                        if (!isFileAlreadyAdded(file, dt)) {
+                            addFileToList(file, filesList);
+                            resolve();
+                        } else {
+                            reject('Файл уже добавлен.');
+                        }
+                    } else {
+                        reject('Файл не прошел проверку. Длительность видео не более 2 минут и размер файла не более 200 МБ.');
+                    }
+
+                    URL.revokeObjectURL(video.src);
+                });
+            } else if (file.type.includes('image')) {
+                if (file.size <= maxImageSize) {
+                    if (!isFileAlreadyAdded(file, dt)) {
+                        addFileToList(file, filesList);
+                        resolve();
+                    } else {
+                        reject('Файл уже добавлен.');
+                    }
+                } else {
+                    reject('Размер превышает допустимый объем для изображения.');
+                }
+            } else if (getFileExtension(file.name).toLowerCase() === 'pdf') {
+                if (file.size <= maxPdfSize) {
+                    if (!isFileAlreadyAdded(file, dt)) {
+                        addFileToList(file, filesList);
+                        resolve();
+                    } else {
+                        reject('Файл уже добавлен.');
+                    }
+                } else {
+                    reject('Размер превышает допустимый объем для PDF.');
+                }
+            } else {
+                reject('Тип файла не поддерживается.');
+            }
         });
     }
 
@@ -110,7 +121,6 @@ let statusText = document.querySelector(".status");
     var inputFileElements = document.querySelectorAll('.input-file input[type=file]');
     inputFileElements.forEach(handleFileInputChange);
 })();
-
 let confirmButton = document.getElementById("confirm");
 
 confirmButton.addEventListener("click", function (event) {
