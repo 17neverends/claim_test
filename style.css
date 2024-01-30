@@ -54,6 +54,7 @@ body::-webkit-scrollbar {
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 0vh;
 }
 
 .general:hover {
