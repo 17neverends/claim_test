@@ -189,6 +189,7 @@ body::-webkit-scrollbar {
     border: none;
     margin: 0;
     transition: background-color 0.5s;
+    
 }
 
 .input-file span {
@@ -215,16 +216,26 @@ body::-webkit-scrollbar {
 
 .input-file input[type=file]:disabled + span {
     background-color: #eee;
+    
 }
 
 .input-file-list {
     padding: 10px 0;
+
 }
 
 .input-file-list-item {
     margin-bottom: 10px;
     font-size: 13px;
     display: flex;
+    
+}
+
+
+.input-file-list-name {
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
 }
 
 .input-file-list-remove {
