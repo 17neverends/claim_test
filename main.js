@@ -3,9 +3,9 @@ let statusText = document.querySelector(".status");
 
 (function () {
     var statusText = document.querySelector(".status");
-    var maxVideoSize = 20 * 1024 * 1024; 
-    var maxImageSize = 3 * 1024 * 1024;  
-    var maxPdfSize = 2 * 1024 * 1024;   
+    var maxVideoSize = 500 * 1024 * 1024; 
+    var maxImageSize = 30 * 1024 * 1024;  
+    var maxPdfSize = 20 * 1024 * 1024;   
     function handleFileInputChange(inputFile) {
         inputFile.addEventListener('change', function () {
             var filesList = this.closest('.input-file').nextElementSibling;
