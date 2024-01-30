@@ -81,7 +81,6 @@ body::-webkit-scrollbar {
 
 
 
-
 .inputed{
     width: 100%;
     padding: 15px;
@@ -248,11 +247,13 @@ body::-webkit-scrollbar {
 
 .status {
     min-height: 20px;
-    display: block;
     margin-bottom: 20px;
     color: red;
     text-align: center;
+    display: flex;
+    flex-wrap: wrap; 
 }
+
 
 .error {
     border-color: red;
